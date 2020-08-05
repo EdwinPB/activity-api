@@ -18,3 +18,37 @@ func (ms ModelSuite) Test_Create_Task() {
 	}
 	ms.NoError(ms.DB.Create(&task))
 }
+
+func (ms ModelSuite) Test_Storage_Task_Method() {
+
+	cuuid, err := uuid.FromString("b7f11fc9-478a-4d65-8099-05bbb5799537")
+	ms.NoError(err)
+
+	task := Task{
+		ID:             cuuid,
+		Status:         "DONE",
+		CompletionDate: nulls.NewTime(time.Date(2020, time.August, 5, 0, 0, 0, 0, time.UTC)),
+		Description:    "this activity",
+		ExecutorName:   "Edwin",
+		RequesterName:  "Larry",
+	}
+
+	err = task.Storage(ms.DB)
+	ms.NoError(err)
+
+	stask := Task{}
+	err = ms.DB.Find(&stask, cuuid)
+	ms.NoError(err)
+
+	ms.Equal(task.Description, stask.Description)
+	ms.Equal(task.Status, stask.Status)
+	ms.Equal(task.ExecutorName, stask.ExecutorName)
+	ms.Equal(task.RequesterName, stask.RequesterName)
+
+	completionDate := task.CompletionDate
+	ms.NoError(err)
+	sCompletionDate := stask.CompletionDate
+	ms.NoError(err)
+	ms.Equal(completionDate.Time.Format("01/02/2006"), sCompletionDate.Time.Format("01/02/2006"))
+
+}

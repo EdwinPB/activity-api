@@ -59,3 +59,10 @@ func (t *Task) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
 func (t *Task) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.NewErrors(), nil
 }
+
+func (t Task) Storage(tx *pop.Connection) error {
+	if err := tx.Create(&t); err != nil {
+		return err
+	}
+	return nil
+}
