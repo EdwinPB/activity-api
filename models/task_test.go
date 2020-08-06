@@ -104,3 +104,81 @@ func (ms ModelSuite) Test_Show_Storage_Tasks() {
 	stasks := task.Tasks(ms.DB)
 	ms.Equal(len(tasks), len(stasks))
 }
+
+func (ms ModelSuite) Test_Show_Done_Storage_Tasks() {
+	tasks := Tasks{
+		{
+			Status:         "DONE",
+			CompletionDate: nulls.NewTime(time.Date(2020, time.August, 5, 0, 0, 0, 0, time.UTC)),
+			Description:    "This activity",
+			ExecutorName:   "Edwin",
+			RequesterName:  "Larry",
+		},
+		{
+			Status:         "DONE",
+			CompletionDate: nulls.NewTime(time.Date(2020, time.August, 5, 0, 0, 0, 0, time.UTC)),
+			Description:    "New activity",
+			ExecutorName:   "Rodo",
+			RequesterName:  "Larry",
+		},
+		{
+			Status:        "",
+			Description:   "New activity",
+			ExecutorName:  "Rodo",
+			RequesterName: "Larry",
+		},
+		{
+			Status:         "",
+			CompletionDate: nulls.NewTime(time.Date(2020, time.August, 5, 0, 0, 0, 0, time.UTC)),
+			Description:    "New activity",
+			ExecutorName:   "Rodo",
+			RequesterName:  "Larry",
+		},
+	}
+
+	err := tasks.Storage(ms.DB)
+	ms.NoError(err)
+
+	task := Task{}
+	dstasks := task.DoneTasks(ms.DB)
+
+	ms.Equal(2, len(dstasks))
+}
+
+func (ms ModelSuite) Test_Show_No_Done_Storage_Tasks() {
+	tasks := Tasks{
+		{
+			Status:         "DONE",
+			CompletionDate: nulls.NewTime(time.Date(2020, time.August, 5, 0, 0, 0, 0, time.UTC)),
+			Description:    "This activity",
+			ExecutorName:   "Edwin",
+			RequesterName:  "Larry",
+		},
+		{
+			Status:        "",
+			Description:   "New activity",
+			ExecutorName:  "Rodo",
+			RequesterName: "Larry",
+		},
+		{
+			Status:        "",
+			Description:   "New activity",
+			ExecutorName:  "Rodo",
+			RequesterName: "Larry",
+		},
+		{
+			Status:        "DONE",
+			Description:   "New activity",
+			ExecutorName:  "Rodo",
+			RequesterName: "Larry",
+		},
+	}
+
+	err := tasks.Storage(ms.DB)
+	ms.NoError(err)
+
+	task := Task{}
+	ndstasks := task.NoDoneTasks(ms.DB)
+
+	ms.Equal(3, len(ndstasks))
+}

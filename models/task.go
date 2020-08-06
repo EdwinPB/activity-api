@@ -81,3 +81,19 @@ func (t Task) Tasks(tx *pop.Connection) Tasks {
 	}
 	return stasks
 }
+
+func (t Task) DoneTasks(tx *pop.Connection) Tasks {
+	stasks := Tasks{}
+	if err := tx.Where("status = 'DONE' AND completion_date IS NOT NULL").All(&stasks); err != nil {
+		return stasks
+	}
+	return stasks
+}
+
+func (t Task) NoDoneTasks(tx *pop.Connection) Tasks {
+	stasks := Tasks{}
+	if err := tx.Where("status <> 'DONE' OR completion_date IS NOT NULL").All(&stasks); err != nil {
+		return stasks
+	}
+	return stasks
+}
