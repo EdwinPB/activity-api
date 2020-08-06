@@ -66,3 +66,10 @@ func (t Task) Storage(tx *pop.Connection) error {
 	}
 	return nil
 }
+
+func (ts Tasks) Storage(tx *pop.Connection) error {
+	if err := tx.Create(&ts); err != nil {
+		return err
+	}
+	return nil
+}

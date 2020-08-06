@@ -52,3 +52,29 @@ func (ms ModelSuite) Test_Storage_Task_Method() {
 	ms.Equal(completionDate.Time.Format("01/02/2006"), sCompletionDate.Time.Format("01/02/2006"))
 
 }
+
+func (ms ModelSuite) Test_Storage_Multiple_Tasks_Method() {
+	tasks := Tasks{
+		{
+			Status:         "DONE",
+			CompletionDate: nulls.NewTime(time.Date(2020, time.August, 5, 0, 0, 0, 0, time.UTC)),
+			Description:    "This activity",
+			ExecutorName:   "Edwin",
+			RequesterName:  "Larry",
+		},
+		{
+			Status:         "DONE",
+			CompletionDate: nulls.NewTime(time.Date(2020, time.August, 5, 0, 0, 0, 0, time.UTC)),
+			Description:    "New activity",
+			ExecutorName:   "Rodo",
+			RequesterName:  "Larry",
+		},
+	}
+
+	err := tasks.Storage(ms.DB)
+	ms.NoError(err)
+
+	stasks := Tasks{}
+	ms.NoError(ms.DB.All(&stasks))
+	ms.Equal(len(tasks), len(stasks))
+}
