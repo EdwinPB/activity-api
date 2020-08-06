@@ -73,3 +73,11 @@ func (ts Tasks) Storage(tx *pop.Connection) error {
 	}
 	return nil
 }
+
+func (t Task) Tasks(tx *pop.Connection) Tasks {
+	stasks := Tasks{}
+	if err := tx.All(&stasks); err != nil {
+		return stasks
+	}
+	return stasks
+}
